@@ -1,15 +1,16 @@
-# secure-banking-api
+# Secure Banking API
 
-A secure backend REST API built using Spring Boot that simulates a banking user management system with role-based access control.
+A secure backend REST API built using Spring Boot that simulates a banking-style user management system with JWT-based authentication and role-based access control.
 
 ---
 
 ## 🚀 Features
 
 - User registration
-- Role-based authentication (USER / ADMIN)
+- JWT-based authentication
+- Role-Based Access Control (USER / ADMIN)
 - Secure password hashing using BCrypt
-- Basic Authentication via Spring Security
+- Stateless authentication
 - Swagger UI for API documentation
 - H2 Database integration
 - RESTful API design
@@ -22,42 +23,93 @@ A secure backend REST API built using Spring Boot that simulates a banking user 
 - Java 17
 - Spring Boot
 - Spring Security
+- JWT (jjwt)
 - Spring Data JPA
 - H2 Database
 - Maven
-- Swagger (OpenAPI)
-- JUnit (if added)
+- Swagger / OpenAPI
 
 ---
 
-## 🔐 Security
+## 🔐 Authentication (JWT)
 
-- Role-Based Access Control (RBAC)
-- ADMIN can:
-  - List all users
-- USER can:
-  - View their own profile
-- Passwords stored securely using BCrypt
+This API uses JSON Web Tokens (JWT) for stateless authentication.
+
+### 1️⃣ Register a User
+
+```bash
+curl -i -X POST http://localhost:8080/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demoUser","password":"test123","role":"USER"}'
+```
 
 ---
 
-## 📂 API Endpoints
+### 2️⃣ Login and Get Token
 
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | /api/users | Create new user | Public |
-| GET | /api/users | List all users | ADMIN |
-| GET | /api/users/me | Get current user profile | Authenticated |
+```bash
+curl -s -X POST http://localhost:8080/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"demoUser","password":"test123"}'
+```
+
+Response:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "tokenType": "Bearer"
+}
+```
+
+---
+
+### 3️⃣ Use Token to Access Protected APIs
+
+```bash
+curl -i http://localhost:8080/api/users/me \
+  -H "Authorization: Bearer <PASTE_TOKEN_HERE>"
+```
+
+---
+
+## 🔑 Role-Based Access Control (RBAC)
+
+| Endpoint | Access Level |
+|-----------|-------------|
+| POST /api/users | Public |
+| POST /auth/login | Public |
+| GET /api/users/me | Authenticated Users |
+| GET /api/users | ADMIN Only |
+
+- USER can access their own profile.
+- ADMIN can list all users.
+- All protected endpoints require a valid JWT token.
 
 ---
 
 ## 🧪 How to Run
 
-1. Clone repository
-2. Run: mvn clean spring-boot:run
-3. Open:
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
-- H2 Console: http://localhost:8080/h2-console
+1. Clone the repository
+
+```
+git clone <your-repo-url>
+cd secure-banking-api
+```
+
+2. Build and run
+
+```
+mvn clean spring-boot:run
+```
+
+3. Open in browser
+
+- Swagger UI:  
+  http://localhost:8080/swagger-ui/index.html
+
+- H2 Console:  
+  http://localhost:8080/h2-console
 
 ---
 
@@ -65,20 +117,42 @@ A secure backend REST API built using Spring Boot that simulates a banking user 
 
 - H2 (file-based or in-memory)
 - Table: USERS
-- Passwords encrypted using BCrypt
+- Passwords stored securely using BCrypt hashing
 
 ---
 
-## 📌 Future Improvements
+## 🏗 Architecture
 
-- JWT Authentication
-- Refresh tokens
+- Controller Layer → Handles HTTP requests
+- Service Layer → Business logic
+- Repository Layer → Data access via JPA
+- Security Layer → JWT filter + authentication handling
+
+---
+
+## 📈 What This Project Demonstrates
+
+- Production-style stateless authentication
+- Custom JWT authentication filter
+- Role-based authorization
+- Secure REST API design
+- Clean layered architecture
+- Real-world backend practices
+
+---
+
+## 🚀 Future Improvements
+
+- Refresh token support
 - Docker containerization
 - PostgreSQL migration
-- CI/CD pipeline integration
-git status
-git add README.md
-git commit -m "Add README"
-git push
+- CI/CD integration
+- Transaction APIs (banking operations)
 
- 
+---
+
+## 👩‍💻 Author
+
+Sireesha Gurram  
+Master’s in Computer Science  
+Backend Developer | Spring Boot | Security | REST APIs
