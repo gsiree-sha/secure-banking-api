@@ -45,5 +45,11 @@ public class UserService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + id));
         return new UserResponse(u.getId(), u.getUsername(), u.getRole(), u.getCreatedAt());
     }
+
+    public UserResponse getByUsername(String username) {
+        User u = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+        return new UserResponse(u.getId(), u.getUsername(), u.getRole(), u.getCreatedAt());
+    }
     
 }

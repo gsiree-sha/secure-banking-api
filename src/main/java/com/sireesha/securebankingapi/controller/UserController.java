@@ -7,9 +7,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.Principal;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @SecurityRequirement(name = "basicAuth")
@@ -24,12 +25,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    @SecurityRequirement(name = "")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponse create(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
     }
 
+    @Operation(summary = "List all users (ADMIN only)")
     @GetMapping
     public List<UserResponse> list() {
         return userService.listUsers();
@@ -39,5 +42,13 @@ public class UserController {
     public UserResponse get(@PathVariable long id) {
         return userService.getUser(id);
     }
+
+    @Operation(summary = "Get current user profile")
+    @GetMapping("/me")
+    public UserResponse me(Principal principal) {
+    return userService.getByUsername(principal.getName());
+}
+
+
 }
 
